@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>Scaling Your Angular App</title>
+
+		<meta name="description" content="A short presentation about the suggested practices for scaling your Angular app from the usual toy, demo apps.">
+		<meta name="author" content="Justin Lowery">
+
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/default.css" id="theme">
+
+		<!-- For syntax highlighting -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- If the query includes 'print-pdf', use the PDF print sheet -->
+		<script>
+			document.write( '<link rel="stylesheet" href="css/print/' + ( window.location.search.match( /print-pdf/gi ) ? 'pdf' : 'paper' ) + '.css" type="text/css" media="print">' );
+		</script>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+
+			<!-- Any section element inside of this container is displayed as a slide -->
+			<div class="slides">
+
+				<section data-markdown>
+					<script type="text/template">
+						# Scaling Your Angular App
+
+						### "We're Not in Kansas Anymore!"
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## Who the heck am I?
+
+						- Me: Justin Lowery, web designer/engineer
+						- Company: [Cerebral Ideas](http://cerebralideas.com)
+						- Twitter: [@cerebralideas](http://twitter.com/cerebralideas)
+						- Github: [cerebralideas (company)](https://github.com/cerebralideas)
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## What I Learned While Halving the Time to Load
+
+						**Initial build**:
+
+						- Ready event: 1.1 sec
+						- Load event: 1.7 sec
+						- Completion: 1.9 sec
+
+						**Refactored build***:
+
+						- Ready event: 395 ms (64% reduction)
+						- Load event: 663 ms (61% reduction)
+						- Completion: 1.3 sec (32% reduction)
+
+						<blockquote>* Same features, just better architected and written</blockquote>
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## My Suggested Practices for Moving Beyond the Todo App
+
+						**Warning**:
+
+						- This is not dogma.
+						- This is not a one-size fits all.
+						- Don't just blindly follow advice, especially mine.
+					</script>
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							## Suggestion #1: Hybridization
+
+							Performance *should* be one of our top priority metrics! So, the question then arises, "Should we completely trust the browser to fully manage a large scale application?"
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Not Yet, The Client Needs Help
+
+							A lesson from Twitter, and their ["time to first tweet."](http://engineering.twitter.com/2012/05/improving-performance-on-twittercom.html)
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Big Changes; Small Changes
+
+							**We decided**:
+
+							- The server should be responsible for first load and major section changes within the application.
+							- The client, or Angular, should be responsible for all subsections and widgets.
+
+							**This is why Angular is awesome!**
+						</script>
+					</section>
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							## Suggestion #2: Asynchrony
+
+							Sometimes moving your code from the head to the footer is not enough. For those times, asynchronous script loaders are full of win.
+
+							This takes advantage of non-blocking parallelization and ASAP type execution.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### The Asynchronous Challenges
+
+							Bootstrapping and statically-loaded-data becomes a bit more difficult.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### How We Solved the Bootstrapping Issue
+
+							``` js
+							yepnope([
+								{
+									// Let's load the global Angular files.
+									load: {
+										globalServices: '/src/js/services/serv-global.js',
+										globalDirectives: '/src/js/directives/dir-global.js',
+										globalController: '/src/js/controllers/ctrlr-global.js'
+									}
+								},
+								{
+									// Let's load the section specific files
+									test: (location.indexOf('patients') !== -1),
+									yep: '/src/js/controllers/ctrlr-patient.js',
+									complete: function () {
+
+										console.log('patients loaded');
+
+										// Now, bootstrap this app!
+										angular.bootstrap(document, ['PAS']);
+									}
+								},
+							]);
+							```
+
+							 <blockquote>* We were already loading Modernizr, so we took advantage of YepNope.</blockquote>
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### How We Solved the Statically Loaded Data Issue
+
+							Dependency injection is KING!
+
+							``` html
+							‹script type="text/javascript"›
+
+								var PAS = angular.module('PAS', [], function ($routeProvider) {
+
+										'use strict';
+
+										// Route logic
+
+									}).
+									factory('globalData', [function () {
+
+										'use strict';
+
+										// Capture the data from the server in the data object.
+										var data = {};
+
+										// Capture user data
+										data.user = ‹?php echo $userService->getUserJson(); ?›;
+
+										// Capture providers from DB
+										data.profs = ‹?php echo $providerService->getProvidersJson(); ?›;
+
+										return data;
+									}]);
+							‹/script›
+							```
+						</script>
+					</section>
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							### Suggestion #3: Split Up Your Code
+
+							Micro apps and todo apps can handle single file architectures, but medium to large applications require a more maintainable and structures architecture.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### The Basics:
+
+							- main.js
+							- controller.js
+							- service.js
+							- directive.js
+							- filter.js
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Level Up:
+
+							ctrlr-patient.js:
+
+							``` js
+							PAS.controller('PtHeader', [
+
+									'$scope', 'dataServices',
+
+									function ctrlrPtHeader($scope, dataServices) {
+
+									"use strict";
+
+									// $scope stuff
+								}]).
+
+								controller('PtSearch', [
+
+									'$scope', 'dataServices',
+
+									function ctrlrPtSearch($scope, dataServices) {
+
+									"use strict";
+
+									// $scope stuff
+								}]);
+							```
+						</script>
+					</section>
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							## Suggestion #4: Limiting the Responsibility of Your Controllers
+
+							Controllers are the lifeblood of your application, but they can also become easily bloated and non-performant if you're not careful.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Small footprints FTW!
+
+							Controllers should be responsible for widgets, not pages.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Avoid DOM Manipulation
+
+							- DOM manipulation is expensive
+							- Let Angular handle the DOM; you worry about the data.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Limit Your Business Logic
+
+							- Avoid business logic in Controllers
+							- Move it to your Services
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### $scope It Right!
+
+							Controllers create scope (or $scope) which is digested *at least once* at each user interaction that potentially modifies data.
+
+							Be careful, and ONLY attach things the view will need from the $scope.
+						</script>
+					</section>
+				</section>
+
+				<section>
+					<section data-markdown>
+						<script type="text/template">
+							## Suggestion #5: Move Data Mgmt to Services
+
+							Controllers should not be responsible for your "model". Utilize a "data service" to manage your model.
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### API All the Things!
+
+							Because Angular provides us with the power of DI, we can easily just include this "data service" into anything that needs access.
+
+							``` js
+							PAS.factory('dataServices', [
+
+								'$http', '$rootScope', 'globalData', 'sectionData',
+
+								function ($http, $rootScope, globalData, sectionData) {
+
+									'use strict';
+
+									var dataModel = {
+
+										globalData: globalData,
+										sectionData: sectionData
+									};
+
+									return { // Data service API
+
+										save: function saveService(data, type, value) {
+
+											// Do some logic
+
+											return $http.post(url, data).
+
+												success(function (data, status) {
+
+													// Yay, success!
+
+												}).error(function (data, status) {
+
+													// Opps, failure :(
+												});
+										},
+
+										query: function queryService(dataType, url) {
+
+											if (url) {
+
+												return $http.get(url).
+
+													success(function (data, status) {
+
+														// Yay, success!
+
+													}).error(function (data, status) {
+
+														// Opps, failure :(
+													});
+											} else {
+
+												return dataModel[dataType];
+											}
+										},
+
+										// moar API
+							```
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### Dependency Injection is Our Unicorn
+
+							``` js
+							controller('PtSearch', [
+
+								'$scope', 'dataServices',
+
+								function ctrlrPtSearch($scope, dataServices) {
+
+									"use strict";
+
+									var ptData = dataServices.query('sectionData');
+
+									$scope.ptList = ptData.ptList;
+
+									// an on …
+							```
+						</script>
+					</section>
+
+					<section data-markdown>
+						<script type="text/template">
+							### $broadcast Your Changes
+
+							If your data changes in a way that is not observed by Angular, use your $broadcast to notify any listeners that things have changed.
+
+							``` js
+							// From your data service
+							$rootScope.$broadcast('refreshData');
+							```
+							``` js
+							// A controller can listen in for this event
+							$scope.$on('refreshData', function () {
+
+								ptData = dataServices.query('sectionData');
+								$scope.ptInfo = ptData.ptInfo;
+							});
+							```
+						</script>
+					</section>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## Is That All That's Needed?
+
+						Not at all. Web performance is a massively complicated and dynamic topic. The thing to remember is context is EVERYTHING and "*metrics* or it didn't happen".
+
+						Do one thing at a time, and test it. Always ensure your metrics support your efforts.
+					</script>
+				</section>
+
+				<section data-markdown>
+					<script type="text/template">
+						## Thank You!
+						### Questions?
+
+						- Twitter: [@cerebralideas](http://twitter.com/cerebralideas)
+						- Email: info@cerebralideas.com
+						- Github: [cerebrl (personal)](https://github.com/cerebrl)
+
+						<blockquote>* You can find the slides to this presentation on my personal GitHub account above.</blockquote>
+					</script>
+				</section>
+
+			</div>
+
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.min.js"></script>
+
+		<script>
+
+			// Full list of configuration options available here:
+			// https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+				transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+				// Optional libraries used to extend on reveal.js
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true, condition: function() { return !!document.body.classList; } },
+					{ src: 'plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/search/search.js', async: true, condition: function() { return !!document.body.classList; } }
+					// { src: 'plugin/remotes/remotes.js', async: true, condition: function() { return !!document.body.classList; } }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
