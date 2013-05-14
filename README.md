@@ -1,4 +1,3 @@
-Scaling-Your-Angular-App
-========================
+# Scaling Your Angular App
 
-A presentation on suggested practices for scaling your app.
+These are the presentation slides covering my suggested practices for scaling your Angular app.

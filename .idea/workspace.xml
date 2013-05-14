@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="8b4eb001-0010-4a89-947a-d398765a63e3" name="Default" comment="" />
+    <list default="true" id="8b4eb001-0010-4a89-947a-d398765a63e3" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
+    </list>
     <ignored path="Scaling-Your-Angular-App.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368548113681" ignored="false" />
-    <file path="/index.html" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368554110926" ignored="false" />
+    <file path="/Dummy.txt" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368554606904" ignored="false" />
+    <file path="/index.html" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368554550961" ignored="false" />
     <file path="/reveal.css" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368552989507" ignored="false" />
+    <file path="$PROJECT_DIR$/../Choosing-Angular-JS/index.html" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368554550961" ignored="false" />
+    <file path="$PROJECT_DIR$/../Choosing-Angular-JS/README.md" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368554683998" ignored="false" />
+    <file path="/README.md" changelist="8b4eb001-0010-4a89-947a-d398765a63e3" time="1368554766611" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -26,10 +31,19 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="index.html" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="index.html" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/index.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="448" column="26" selection-start="11976" selection-end="11976" vertical-scroll-proportion="0.61480075">
+            <state line="448" column="26" selection-start="11976" selection-end="11976" vertical-scroll-proportion="-21.333334">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="README.md" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/README.md">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="91" selection-start="119" selection-end="119" vertical-scroll-proportion="0.033302497">
               <folding />
             </state>
           </provider>
@@ -64,6 +78,7 @@
       <list>
         <option value="$PROJECT_DIR$/css/reveal.css" />
         <option value="$PROJECT_DIR$/index.html" />
+        <option value="$PROJECT_DIR$/README.md" />
       </list>
     </option>
   </component>
@@ -249,7 +264,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="448" column="26" selection-start="11976" selection-end="11976" vertical-scroll-proportion="0.61480075">
+        <state line="448" column="26" selection-start="11976" selection-end="11976" vertical-scroll-proportion="-21.333334">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="91" selection-start="119" selection-end="119" vertical-scroll-proportion="0.033302497">
           <folding />
         </state>
       </provider>
